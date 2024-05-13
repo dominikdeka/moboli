@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "section4",
-    "slug": "section4",
-    "version": "1.0.0",
+    "name": "boboli",
+    "slug": "boboli",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,10 +21,27 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.dominikdeka.boboli",
+      "permissions": [
+        "android.permission.INTERNET"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0215c31e-6fd0-4048-be12-aba41f45ae7a"
+      }
+    },
+    "plugins": [[
+      "expo-build-properties",
+      {
+        "android": {
+          "usesCleartextTraffic": true
+        }
+      }
+    ]]
   }
 }

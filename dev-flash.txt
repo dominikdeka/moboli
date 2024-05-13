@@ -1,0 +1,7 @@
+1) expo spójne środowisko, należy w nim pozostawać aby zachować spójność projektu (npx) expo init, expo start, npx expo install
+2) react-native zamiast react-dom
+3) sposoby testowania, debugowania, react-devtools
+4) domyślne ustawienia: display: flex, flex-direction: column
+5) style: bez dziedziczenia!
+6) View jako kontener
+7) Bardziej szczegółowo nie będę wchodził - dokumentacja
