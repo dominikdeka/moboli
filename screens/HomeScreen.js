@@ -2,13 +2,14 @@ import * as React from 'react';
 
 import { Text, View, StyleSheet } from 'react-native'
 import PrimaryButton from '../components/PrimaryButton';
-import Volume from '../components/Volume';
-import { commonStyles } from '../styles/common';
+import Volume from '../components/Radio';
+import Status from '../components/Status';
+import Radio from '../components/Radio';
 // import { useSharedValue } from 'react-native-reanimated';
 // import { Slider } from 'react-native-awesome-slider';
 
 function HomeScreen() {
-  const [serverState, setServerState] = React.useState('Loading...');
+  const [serverState, setServerState] = React.useState('');
   const [serverError, setServerError] = React.useState('');
   const [socket, setSocket] = React.useState();
   const [states, setStates] = React.useState([]);
@@ -21,15 +22,16 @@ function HomeScreen() {
 
   function connect(message = '') {
     var ws = new WebSocket('ws://192.168.1.12:8899/');
+    setServerState('Connecting...')
     ws.onopen = () => {
-      setServerState('Connected to the server')
+      setServerState('Connected')
 
       if (message) {
         ws.send(message)
       }
     };
     ws.onclose = (e) => {
-      setServerState('Disconnected. Check internet or server.')
+      setServerState('Disconnected')
     };
     ws.onerror = (e) => {
       setServerError(e.message);
@@ -58,9 +60,9 @@ function HomeScreen() {
 
 return <>
     <View style={styles.inputContainer}>
-      <Text style={styles.textContainer}>GPIO: {serverState}</Text>
-      {serverError && <Text style={commonStyles.errorContainer}>GPIO: {serverError}</Text>}
 
+      <Status name='GPIO' onReload={connect} serverError={serverError} serverState={serverState} />
+      
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonContainer}>    
           <PrimaryButton onPress={pressHandler} gpioPin={pins[6]} state={states[6]}>Agata</PrimaryButton>
@@ -93,7 +95,7 @@ return <>
 
       <View style={styles.buttonsContainer}>
         <View style={styles.sliderContainer}>
-          <Volume 
+          <Radio 
             name='Home'
             url='ws://192.168.1.12:6680/mopidy/ws'
           />
@@ -102,7 +104,7 @@ return <>
 
       <View style={styles.buttonsContainer}>
         <View style={styles.sliderContainer}>
-          <Volume 
+          <Radio 
             name='Salon'
             url='ws://192.168.1.36:6680/mopidy/ws'
           />
@@ -118,7 +120,7 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   inputContainer: {
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'stretch',
     padding: 16,
     // marginTop: 100,
     marginHorizontal:24,
@@ -129,11 +131,12 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: { 
     flexDirection: 'row',
-    marginVertical: 10
+    marginVertical: 10,
+    gap: 8
   },
   sliderContainer: { 
     flex: 1,
-    marginHorizontal: 10,
+    // marginHorizontal: 10,
   },
   buttonContainer: { 
     flex: 1

@@ -1,19 +1,22 @@
 import * as React from 'react';
 
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Image } from 'react-native'
 import { Slider } from '@miblanchard/react-native-slider';
-import { commonStyles } from '../styles/common'
+import Status from './Status';
+import IconButton from './IconButton';
 
-function Volume({url, name}) {
-  const [mopidyServerState, setMopidyServerState] = React.useState('Loading...');
-  const [mopidyServerError, setMopidyServerError] = React.useState('');
+function Radio({url, name}) {
+  const [serverState, setServerState] = React.useState('');
+  const [serverError, setServerError] = React.useState('');
   const [socketMopidy, setSocketMopidy] = React.useState();
   const [mopidyVolumeValue, setMopidyVolumeValue] = React.useState(0);
 
   function connectMopidy(message = '') {
+    setServerState('Connecting...')
+
     var ws = new WebSocket(url);
     ws.onopen = () => {
-      setMopidyServerState('Connected to the server')
+      setServerState('Connected')
 
       if (message) {
         ws.send(message)
@@ -22,10 +25,10 @@ function Volume({url, name}) {
       }
     };
     ws.onclose = (e) => {
-      setMopidyServerState('Disconnected. Check internet or server.')
+      setServerState('Disconnected')
     };
     ws.onerror = (e) => {
-      setMopidyServerError(e.message);
+      setServerError(e.message);
     };
     ws.onmessage = (e) => {
       const dataReceived = JSON.parse(e.data);
@@ -36,7 +39,7 @@ function Volume({url, name}) {
       if (dataReceived.result && dataReceived.id === 99) {
         setMopidyVolumeValue(dataReceived.result)
       }
-      setMopidyServerError('')
+      setServerError('')
     };
     setSocketMopidy(ws)
   }
@@ -54,9 +57,29 @@ function Volume({url, name}) {
     }
   }
 
+  const radioOnHandler = (radio) => {
+    let stream;
+    switch (radio) {
+      case 'rns':
+        stream = 'https://stream.rcs.revma.com/ypqt40u0x1zuv'  
+        break;    
+      default:
+        stream = 'https://stream.rcs.revma.com/ye5kghkgcm0uv'  
+        break;
+    }
+
+    if (socketMopidy.readyState !== 1) {
+      connectMopidy() // TODO
+    } else {
+      socketMopidy.send(JSON.stringify({"method":"core.mixer.set_volume","params":{"volume":35},"jsonrpc":"2.0","id":47}))
+      socketMopidy.send(JSON.stringify({"method":"core.tracklist.clear","jsonrpc":"2.0","id":73}))
+      socketMopidy.send(JSON.stringify({"jsonrpc": "2.0", "id": 1, "method": "core.tracklist.set_repeat", "params": {"value": false}}))
+      socketMopidy.send(JSON.stringify({"jsonrpc": "2.0", "method":"core.tracklist.add","params":{"uris":[stream]},"id":87}))
+      socketMopidy.send(JSON.stringify({"jsonrpc": "2.0", "id": 1, "method": "core.playback.play"}))
+    }
+  }
   return <View style={styles.volumeContainer}>
-      <Text style={styles.textContainer}>{name}: {mopidyServerState}</Text>
-      {mopidyServerError && <Text style={commonStyles.errorContainer}>{name}: {mopidyServerError}</Text>}
+      <Status name={name} onReload={connectMopidy} serverError={serverError} serverState={serverState} />
       <Slider
         value={mopidyVolumeValue}
         minimumValue={0}
@@ -68,12 +91,24 @@ function Volume({url, name}) {
         thumbStyle={styles.thumb}
         trackStyle={styles.track}
       />
+      <View style={styles.controlsContainer}>
+        <IconButton onPress={() => radioOnHandler('357')}>
+          <Image source={require('../assets/images/357.png')} style={{ width: 50, height: 50 }} />
+        </IconButton>
+        <IconButton onPress={() => radioOnHandler('rns')}>
+          <Image source={require('../assets/images/rns.jpg')} style={{ width: 50, height: 50 }} />
+        </IconButton>
+      </View>
     </View>
 }
 
-export default Volume;
+export default Radio;
 
 const styles = StyleSheet.create({
+  controlsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   buttonContainer: {
     borderRadius: 28,
     overflow: 'hidden'

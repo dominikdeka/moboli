@@ -1,18 +1,20 @@
 import {View, Text, Pressable, StyleSheet} from 'react-native'
-function PrimaryButton({gpioPin, onPress, state, children}) {
+import Ionicons from '@expo/vector-icons/Ionicons'
+
+function IconButton({onPress, name, children}) {
   function pressHandler() {
     if (onPress) {
-      onPress(gpioPin);
+      onPress();
     }
   }
   return <View style={styles.buttonOuterContainer}>
-      <Pressable style={state ? [styles.buttonOn, styles.buttonInnerContainer] : [styles.buttonOff, styles.buttonInnerContainer]} onPress={pressHandler} android_ripple={{ color: '#640233' }}>
-        <Text style={styles.buttonText}>{children}</Text>
+      <Pressable style={styles.buttonInnerContainer} onPress={pressHandler} android_ripple={{ color: '#640233' }}>
+        {name ? <Ionicons name={name} size={20} color="white" /> : children}
       </Pressable>
     </View>
 }
 
-export default PrimaryButton;
+export default IconButton;
 
 const styles = StyleSheet.create({
   buttonOuterContainer: {
@@ -22,12 +24,6 @@ const styles = StyleSheet.create({
   buttonInnerContainer: {
     paddingVertical: 8,
     elevation: 2,
-  },
-  buttonOn: {
-    backgroundColor: 'green',
-  },
-  buttonOff: {
-    backgroundColor: '#dd2222',
   },
   buttonText: {
     color: 'white',
