@@ -11,15 +11,15 @@ function Radio({url, name}) {
   const [socketMopidy, setSocketMopidy] = React.useState();
   const [mopidyVolumeValue, setMopidyVolumeValue] = React.useState(0);
 
-  function connectMopidy(message = '') {
+  function connectMopidy(messages = []) {
     setServerState('Connecting...')
 
     var ws = new WebSocket(url);
     ws.onopen = () => {
       setServerState('Connected')
 
-      if (message) {
-        ws.send(message)
+      if (Array.isArray(messages) && messages.length) {
+        messages.forEach(msg => ws.send(msg))
       } else {
         ws.send(JSON.stringify({method:'core.mixer.get_volume',jsonrpc:'2.0', id: 99 }));
       }
@@ -32,7 +32,6 @@ function Radio({url, name}) {
     };
     ws.onmessage = (e) => {
       const dataReceived = JSON.parse(e.data);
-      // console.log(dataReceived)
       if (dataReceived.volume) {
         setMopidyVolumeValue(dataReceived.volume)
       }
@@ -49,9 +48,9 @@ function Radio({url, name}) {
   }, [])
 
   const volumeChangeHandler = (value) => {
-    const msg = JSON.stringify({method:"core.mixer.set_volume",params:{volume:value[0]},jsonrpc:"2.0",'id':100})
+    const msg = JSON.stringify({method:'core.mixer.set_volume',params:{volume:value[0]},jsonrpc:'2.0',id:100})
     if (socketMopidy.readyState !== 1) {
-      connectMopidy(msg)
+      connectMopidy([msg])
     } else {
       socketMopidy.send(msg)
     }
@@ -67,15 +66,17 @@ function Radio({url, name}) {
         stream = 'https://stream.rcs.revma.com/ye5kghkgcm0uv'  
         break;
     }
-
+    const messages = [
+      // JSON.stringify({jsonrpc:'2.0', method: 'core.mixer.set_volume', params:{volume:35},id:100}),
+      JSON.stringify({jsonrpc:'2.0', method: 'core.tracklist.clear', id:73}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.set_repeat', params: {'value': false}, id: 1}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.add', params:{'uris':[stream]}, id:87}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.playback.play', id: 1})
+    ]
     if (socketMopidy.readyState !== 1) {
-      connectMopidy() // TODO
+      connectMopidy(messages)
     } else {
-      socketMopidy.send(JSON.stringify({"method":"core.mixer.set_volume","params":{"volume":35},"jsonrpc":"2.0","id":47}))
-      socketMopidy.send(JSON.stringify({"method":"core.tracklist.clear","jsonrpc":"2.0","id":73}))
-      socketMopidy.send(JSON.stringify({"jsonrpc": "2.0", "id": 1, "method": "core.tracklist.set_repeat", "params": {"value": false}}))
-      socketMopidy.send(JSON.stringify({"jsonrpc": "2.0", "method":"core.tracklist.add","params":{"uris":[stream]},"id":87}))
-      socketMopidy.send(JSON.stringify({"jsonrpc": "2.0", "id": 1, "method": "core.playback.play"}))
+      messages.forEach((msg) => socketMopidy.send(msg))
     }
   }
   return <View style={styles.volumeContainer}>
