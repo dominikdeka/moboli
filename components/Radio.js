@@ -1,9 +1,10 @@
 import * as React from 'react';
 
-import { View, Text, StyleSheet, Image } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { Slider } from '@miblanchard/react-native-slider';
 import Status from './Status';
 import IconButton from './IconButton';
+import { RadioNS, Radio357 } from '../assets/images/svg';
 
 function Radio({url, name}) {
   const [serverState, setServerState] = React.useState('');
@@ -68,10 +69,10 @@ function Radio({url, name}) {
     }
     const messages = [
       // JSON.stringify({jsonrpc:'2.0', method: 'core.mixer.set_volume', params:{volume:35},id:100}),
-      JSON.stringify({jsonrpc:'2.0', method: 'core.tracklist.clear', id:73}),
-      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.set_repeat', params: {'value': false}, id: 1}),
-      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.add', params:{'uris':[stream]}, id:87}),
-      JSON.stringify({jsonrpc: '2.0', method: 'core.playback.play', id: 1})
+      JSON.stringify({jsonrpc:'2.0', method: 'core.tracklist.clear', id:101}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.set_repeat', params: {'value': false}, id: 102}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.add', params:{'uris':[stream]}, id:103}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.playback.play', id: 104})
     ]
     if (socketMopidy.readyState !== 1) {
       connectMopidy(messages)
@@ -94,10 +95,10 @@ function Radio({url, name}) {
       />
       <View style={styles.controlsContainer}>
         <IconButton onPress={() => radioOnHandler('357')}>
-          <Image source={require('../assets/images/357.png')} style={{ width: 50, height: 50 }} />
+          <Radio357 width={100} height={100} />
         </IconButton>
         <IconButton onPress={() => radioOnHandler('rns')}>
-          <Image source={require('../assets/images/rns.jpg')} style={{ width: 50, height: 50 }} />
+          <RadioNS width={100} height={100} />
         </IconButton>
       </View>
     </View>
