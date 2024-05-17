@@ -18,12 +18,9 @@ export default IconButton;
 
 const styles = StyleSheet.create({
   buttonOuterContainer: {
-    borderRadius: 28,
-    overflow: 'hidden'
   },
   buttonInnerContainer: {
     paddingVertical: 8,
-    elevation: 2,
   },
   buttonText: {
     color: 'white',

@@ -3,11 +3,23 @@ import * as React from 'react';
 import { Text, StyleSheet, View } from 'react-native'
 import { commonStyles } from '../styles/common'
 import IconButton from './IconButton';
+import TextTicker from 'react-native-text-ticker';
 
-function Status({name, onReload, serverState, serverError}) {
+function Status({name, onReload, serverState, serverError, loading}) {
   return <View style={styles.statusContainer}>
-      <Text style={serverError ? commonStyles.errorContainer : styles.textContainer}>{name}: {serverState}</Text>
-      <IconButton onPress={onReload} name='reload-outline' />
+      <View  style={serverError ? [styles.textContainer, commonStyles.errorContainer] : styles.textContainer}>
+        <TextTicker
+            style={serverError ? commonStyles.errorContainer : styles.text}
+            duration={6000}
+            repeatSpacer={100}
+            marqueeDelay={5000}
+          >
+            {name}: {loading ? 'Loading...' : serverState}
+        </TextTicker>
+      </View>
+      <View style={styles.iconContainer}>
+        <IconButton onPress={onReload} name='reload-outline' />
+      </View>
     </View>
 }
 
@@ -19,7 +31,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   textContainer: {
+    paddingVertical: 8,
+  },
+  iconContainer: {
+  },
+  text: {
     color: 'white',
-    paddingVertical: 8
-  }
+  },
 })

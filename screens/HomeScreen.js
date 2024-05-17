@@ -59,7 +59,7 @@ function HomeScreen() {
 
 
 return <>
-    <View style={styles.inputContainer}>
+    <View style={styles.homeScreenContainer}>
 
       <Status name='GPIO' onReload={connect} serverError={serverError} serverState={serverState} />
       
@@ -93,22 +93,18 @@ return <>
         </View>
       </View>
 
-      <View style={styles.buttonsContainer}>
-        <View style={styles.sliderContainer}>
+      <View style={styles.radioContainer}>
           <Radio 
             name='Home'
             url='ws://192.168.1.12:6680/mopidy/ws'
           />
-        </View>
       </View>
 
-      <View style={styles.buttonsContainer}>
-        <View style={styles.sliderContainer}>
+      <View style={styles.radioContainer}>
           <Radio 
             name='Salon'
             url='ws://192.168.1.36:6680/mopidy/ws'
           />
-        </View>
       </View>
 
     </View>
@@ -118,11 +114,10 @@ return <>
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  inputContainer: {
+  homeScreenContainer: {
     justifyContent: 'center',
     alignItems: 'stretch',
     padding: 16,
-    // marginTop: 100,
     marginHorizontal:24,
     backgroundColor: '#4e0329',
     opacity: 0.8,
@@ -134,19 +129,10 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     gap: 8
   },
-  sliderContainer: { 
-    flex: 1,
-    // marginHorizontal: 10,
-  },
   buttonContainer: { 
     flex: 1
   },
-  textContainer: {
-    color: 'white',
-    paddingVertical: 8
+  radioContainer: { 
+    marginVertical: 8,
   },
-  errorContainer: {
-    color: '#ff7777',
-    paddingVertical: 8
-  }
 });

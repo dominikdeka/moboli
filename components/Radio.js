@@ -11,6 +11,7 @@ function Radio({url, name}) {
   const [serverError, setServerError] = React.useState('');
   const [socketMopidy, setSocketMopidy] = React.useState();
   const [mopidyVolumeValue, setMopidyVolumeValue] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
 
   function connectMopidy(messages = []) {
     setServerState('Connecting...')
@@ -32,12 +33,17 @@ function Radio({url, name}) {
       setServerError(e.message);
     };
     ws.onmessage = (e) => {
+      console.info(e.data)
       const dataReceived = JSON.parse(e.data);
       if (dataReceived.volume) {
         setMopidyVolumeValue(dataReceived.volume)
       }
       if (dataReceived.result && dataReceived.id === 99) {
         setMopidyVolumeValue(dataReceived.result)
+      }
+      if (dataReceived.event === 'stream_title_changed') {
+        setServerState(dataReceived.title)
+        setLoading(false)
       }
       setServerError('')
     };
@@ -49,6 +55,7 @@ function Radio({url, name}) {
   }, [])
 
   const volumeChangeHandler = (value) => {
+    // setLoading(true)
     const msg = JSON.stringify({method:'core.mixer.set_volume',params:{volume:value[0]},jsonrpc:'2.0',id:100})
     if (socketMopidy.readyState !== 1) {
       connectMopidy([msg])
@@ -58,6 +65,7 @@ function Radio({url, name}) {
   }
 
   const radioOnHandler = (radio) => {
+    setLoading(true)
     let stream;
     switch (radio) {
       case 'rns':
@@ -80,8 +88,8 @@ function Radio({url, name}) {
       messages.forEach((msg) => socketMopidy.send(msg))
     }
   }
-  return <View style={styles.volumeContainer}>
-      <Status name={name} onReload={connectMopidy} serverError={serverError} serverState={serverState} />
+  return <View style={loading ? [styles.loading, styles.radioContainer] : styles.volumeContainer}>
+      <Status name={name} onReload={connectMopidy} loading={loading} serverError={serverError} serverState={serverState} />
       <Slider
         value={mopidyVolumeValue}
         minimumValue={0}
@@ -107,6 +115,12 @@ function Radio({url, name}) {
 export default Radio;
 
 const styles = StyleSheet.create({
+  radioContainer: {
+    alignItems: 'stretch'
+  },
+  loading: {
+    opacity: 0.5
+  },
   controlsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
