@@ -5,17 +5,21 @@ import { commonStyles } from '../styles/common'
 import IconButton from './IconButton';
 import TextTicker from 'react-native-text-ticker';
 
-function Status({name, onReload, serverState, serverError, loading}) {
+function Status({name, onReload, serverState, serverError, loading, title = ''}) {
+  const [state, setState] = React.useState('')
+  React.useEffect(() => {
+    if (loading) setState(`${name}: Loading...`);
+    else if (serverError || !title) setState(`${name}: ${serverState}`);
+    else setState(title);
+  }, [serverState, loading, title])
   return <View style={styles.statusContainer}>
-      <View  style={serverError ? [styles.textContainer, commonStyles.errorContainer] : styles.textContainer}>
+      <View  style={styles.textContainer}>
         <TextTicker
-            style={serverError ? commonStyles.errorContainer : styles.text}
+            style={serverError ? commonStyles.error : commonStyles.text}
             duration={6000}
             repeatSpacer={100}
             marqueeDelay={5000}
-          >
-            {name}: {loading ? 'Loading...' : serverState}
-        </TextTicker>
+          >{state}</TextTicker>
       </View>
       <View style={styles.iconContainer}>
         <IconButton onPress={onReload} name='reload-outline' />
@@ -32,10 +36,8 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     paddingVertical: 8,
+    flexShrink: 1
   },
   iconContainer: {
-  },
-  text: {
-    color: 'white',
   },
 })

@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "boboli",
-    "slug": "boboli",
-    "version": "1.0.7",
+    "name": "moBoli",
+    "slug": "moBoli",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.dominikdeka.boboli",
+      "package": "com.dominikdeka.moBoli",
       "permissions": [
         "android.permission.INTERNET"
       ]
@@ -32,16 +32,18 @@
     },
     "extra": {
       "eas": {
-        "projectId": "0215c31e-6fd0-4048-be12-aba41f45ae7a"
+        "projectId": "518399b1-7140-4c89-9d85-470065a513ad"
       }
     },
-    "plugins": [[
-      "expo-build-properties",
-      {
-        "android": {
-          "usesCleartextTraffic": true
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
         }
-      }
-    ]]
+      ]
+    ]
   }
 }

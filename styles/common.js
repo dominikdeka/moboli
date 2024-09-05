@@ -5,9 +5,12 @@ const COLORS = {
     ERROR: '#ff7777'
 };
 export const commonStyles = StyleSheet.create({
-  errorContainer: {
+  error: {
+    fontSize: 16,
     color: COLORS.ERROR,
-    paddingVertical: 8,
-    textAlign: 'center'
   },
+  text: {
+    fontSize: 16,
+    color: COLORS.WHITE,
+  }
 });

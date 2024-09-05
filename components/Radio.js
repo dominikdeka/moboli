@@ -9,63 +9,175 @@ import { RadioNS, Radio357 } from '../assets/images/svg';
 function Radio({url, name}) {
   const [serverState, setServerState] = React.useState('');
   const [serverError, setServerError] = React.useState('');
-  const [socketMopidy, setSocketMopidy] = React.useState();
+  const [title, setTitle] = React.useState('');
+  const [streamTitle, setStreamTitle] = React.useState('');
+  const [playing, setPlaying] = React.useState(true);
+  const [socketMopidy, setSocketMopidy] = React.useState(null);
   const [mopidyVolumeValue, setMopidyVolumeValue] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
-
+  const [waitStreamTitle, setWaitStreamTitle] = React.useState(false);
   function connectMopidy(messages = []) {
-    setServerState('Connecting...')
-
+    setLoading(true)
     var ws = new WebSocket(url);
     ws.onopen = () => {
       setServerState('Connected')
 
       if (Array.isArray(messages) && messages.length) {
         messages.forEach(msg => ws.send(msg))
-      } else {
-        ws.send(JSON.stringify({method:'core.mixer.get_volume',jsonrpc:'2.0', id: 99 }));
       }
+
+      ws.send(JSON.stringify({method:'core.mixer.get_volume',jsonrpc:'2.0', id: 99 }));
+      ws.send(JSON.stringify({method:'core.playback.get_stream_title',jsonrpc:'2.0', id: 98}))
+      ws.send(JSON.stringify({method:'core.playback.get_state',jsonrpc:'2.0', id: 97}))
+      ws.send(JSON.stringify({method:'core.playback.get_current_tl_track',jsonrpc:'2.0', id: 96}))
     };
     ws.onclose = (e) => {
       setServerState('Disconnected')
     };
     ws.onerror = (e) => {
+      console.log('error', e.message)
       setServerError(e.message);
     };
     ws.onmessage = (e) => {
       console.info(e.data)
       const dataReceived = JSON.parse(e.data);
-      if (dataReceived.volume) {
-        setMopidyVolumeValue(dataReceived.volume)
-      }
       if (dataReceived.result && dataReceived.id === 99) {
         setMopidyVolumeValue(dataReceived.result)
-      }
-      if (dataReceived.event === 'stream_title_changed') {
-        setServerState(dataReceived.title)
         setLoading(false)
       }
+      if (dataReceived.id === 98) {
+        setStreamTitle(dataReceived.result)
+        setLoading(false)
+      }
+      if (dataReceived.result && dataReceived.id === 97) {
+        setPlaying(dataReceived.result === 'playing' ? true : false)
+        setLoading(false)
+      }
+      if (dataReceived.id === 96
+          && (dataReceived.result?.track.name || (Array.isArray(dataReceived.result.artists) && dataReceived.result.artists.length))) {
+        const title = []
+        if (Array.isArray(dataReceived.result.track.artists) && dataReceived.result.track.artists.length) {
+          title.push(dataReceived.result.track.artists[0]?.name)
+        }
+        if (dataReceived.result?.track.name) {
+          title.push(dataReceived.result?.track.name)
+        }
+        if (title.length)
+          setTitle(title.join(' - '))
+        setLoading(false)
+      
+        if (dataReceived.event === 'volume_changed' && dataReceived.volume) {
+          setMopidyVolumeValue(dataReceived.volume)
+          // setLoading(false)
+        }
+        if (dataReceived.event === 'playback_state_changed') {
+          setPlaying(dataReceived.new_state === 'playing' ? true : false)
+          // if (dataReceived.new_state !== 'playing') setLoading(false)
+        }
+        if (dataReceived.event === 'track_playback_resumed') {
+          setLoading(false)
+        }
+        if (dataReceived.event === 'track_playback_started') {
+          const title = []
+          if (Array.isArray(dataReceived.tl_track.track.artists) && dataReceived.tl_track.track.artists.length) {
+            title.push(dataReceived.tl_track.track.artists[0]?.name)
+          }
+          if (dataReceived.tl_track?.track.name) {
+            title.push(dataReceived.tl_track?.track.name)
+          }
+          if (title.length)
+            setTitle(title.join(' - '))
+          
+          setLoading(false)
+        }
+      }
+
+      if (dataReceived.event === 'stream_title_changed') {
+        setStreamTitle(dataReceived.title)
+        setLoading(false)
+        setWaitStreamTitle(false)
+      }
+
       setServerError('')
     };
-    setSocketMopidy(ws)
+    return ws
   }
 
   React.useEffect(() => {
-    connectMopidy()
+    setSocketMopidy(connectMopidy())
+    return () => {
+      socketMopidy?.close();
+    }
   }, [])
 
-  const volumeChangeHandler = (value) => {
-    // setLoading(true)
+  const volumeChangeHandler = async (value) => {
+    setLoading(true)
     const msg = JSON.stringify({method:'core.mixer.set_volume',params:{volume:value[0]},jsonrpc:'2.0',id:100})
     if (socketMopidy.readyState !== 1) {
-      connectMopidy([msg])
+      setSocketMopidy(connectMopidy([msg]))
     } else {
-      socketMopidy.send(msg)
+      await socketMopidy.send(msg)
+    }
+    setLoading(false)
+  }
+
+  const stopHandler = async () => {
+    setLoading(true)
+    setPlaying(false)
+    setWaitStreamTitle(true)
+
+
+    const messages = [
+      JSON.stringify({method:'core.playback.stop',jsonrpc:'2.0',id:101})
+    ];
+    if (socketMopidy.readyState !== 1) {
+      setSocketMopidy(connectMopidy(messages))
+    } else {
+      for(msg of messages) {
+        await socketMopidy.send(msg)
+      }
+    }
+    setLoading(false)
+  }
+
+  const playHandler = async () => {
+    setLoading(true)
+    // setPlaying(true)
+
+    const messages = [
+      JSON.stringify({method:'core.playback.play',params:{},jsonrpc:'2.0',id:102})
+    ];
+    if (socketMopidy.readyState !== 1) {
+      setSocketMopidy(connectMopidy(messages))
+    } else {
+      for(msg of messages) {
+        await socketMopidy.send(msg)
+      }
     }
   }
 
-  const radioOnHandler = (radio) => {
+  const pauseHandler = async() => {
     setLoading(true)
+    // setPlaying(false)
+    const messages = [
+      JSON.stringify({method:'core.playback.pause',params:{}, jsonrpc:'2.0',id:103})
+    ];
+    if (socketMopidy.readyState !== 1) {
+      setSocketMopidy(connectMopidy(messages))
+    } else {
+      for(msg of messages) {
+        await socketMopidy.send(msg)
+      }
+    }
+    setLoading(false)
+  }
+
+  const radioOnHandler = async (radio) => {
+    setLoading(true)
+    setPlaying(true)
+    setTitle('...')
+    setStreamTitle('...')
+    setWaitStreamTitle(true)
     let stream;
     switch (radio) {
       case 'rns':
@@ -77,19 +189,28 @@ function Radio({url, name}) {
     }
     const messages = [
       // JSON.stringify({jsonrpc:'2.0', method: 'core.mixer.set_volume', params:{volume:35},id:100}),
-      JSON.stringify({jsonrpc:'2.0', method: 'core.tracklist.clear', id:101}),
-      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.set_repeat', params: {'value': false}, id: 102}),
-      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.add', params:{'uris':[stream]}, id:103}),
-      JSON.stringify({jsonrpc: '2.0', method: 'core.playback.play', id: 104})
+      JSON.stringify({jsonrpc:'2.0', method: 'core.tracklist.clear', id:104}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.set_repeat', params: {'value': false}, id: 105}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.add', params:{'uris':[stream]}, id:106}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.playback.play', id: 107}),
     ]
     if (socketMopidy.readyState !== 1) {
-      connectMopidy(messages)
+      setSocketMopidy(connectMopidy(messages))
     } else {
-      messages.forEach((msg) => socketMopidy.send(msg))
+      for(msg of messages) {
+        await socketMopidy.send(msg)
+      }
     }
   }
   return <View style={loading ? [styles.loading, styles.radioContainer] : styles.volumeContainer}>
-      <Status name={name} onReload={connectMopidy} loading={loading} serverError={serverError} serverState={serverState} />
+      <Status 
+        name={name} 
+        onReload={connectMopidy} 
+        loading={loading} 
+        title={streamTitle ? 'ST: ' + streamTitle : 'T: ' + title} 
+        serverError={serverError} 
+        serverState={serverState}
+      />
       <Slider
         value={mopidyVolumeValue}
         minimumValue={0}
@@ -105,6 +226,9 @@ function Radio({url, name}) {
         <IconButton onPress={() => radioOnHandler('357')}>
           <Radio357 width={100} height={100} />
         </IconButton>
+        {!playing && <IconButton onPress={() => playHandler()} name='play'></IconButton>}
+        {playing && <IconButton onPress={() => pauseHandler()} name='pause'></IconButton>}
+        <IconButton onPress={() => stopHandler()} name='stop'></IconButton>
         <IconButton onPress={() => radioOnHandler('rns')}>
           <RadioNS width={100} height={100} />
         </IconButton>
@@ -124,6 +248,7 @@ const styles = StyleSheet.create({
   controlsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center'
   },
   buttonContainer: {
     borderRadius: 28,
@@ -131,11 +256,6 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     color: 'white',
-    paddingVertical: 8,
-    textAlign: 'center'
-  },
-  errorContainer: {
-    color: '#ff7777',
     paddingVertical: 8,
     textAlign: 'center'
   },
