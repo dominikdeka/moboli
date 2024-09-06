@@ -9,12 +9,14 @@ import { RadioNS, Radio357 } from '../assets/images/svg';
 function Radio({url, name}) {
   const [serverState, setServerState] = React.useState('');
   const [serverError, setServerError] = React.useState('');
+  const [socketMopidy, setSocketMopidy] = React.useState(null);
+
+  const [volume, setVolume] = React.useState(0);
+  const [playing, setPlaying] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const [title, setTitle] = React.useState('');
   const [streamTitle, setStreamTitle] = React.useState('');
-  const [playing, setPlaying] = React.useState(true);
-  const [socketMopidy, setSocketMopidy] = React.useState(null);
-  const [mopidyVolumeValue, setMopidyVolumeValue] = React.useState(0);
-  const [loading, setLoading] = React.useState(false);
+  const [trackTitle, setTrackTitle] = React.useState('');
   const [waitStreamTitle, setWaitStreamTitle] = React.useState(false);
   function connectMopidy(messages = []) {
     setLoading(true)
@@ -42,16 +44,13 @@ function Radio({url, name}) {
       console.info(e.data)
       const dataReceived = JSON.parse(e.data);
       if (dataReceived.result && dataReceived.id === 99) {
-        setMopidyVolumeValue(dataReceived.result)
-        setLoading(false)
+        setVolume(dataReceived.result)
       }
       if (dataReceived.id === 98) {
-        setStreamTitle(dataReceived.result)
-        setLoading(false)
+        setStreamTitle(dataReceived.result && dataReceived.result)
       }
       if (dataReceived.result && dataReceived.id === 97) {
         setPlaying(dataReceived.result === 'playing' ? true : false)
-        setLoading(false)
       }
       if (dataReceived.id === 96
           && (dataReceived.result?.track.name || (Array.isArray(dataReceived.result.artists) && dataReceived.result.artists.length))) {
@@ -62,40 +61,37 @@ function Radio({url, name}) {
         if (dataReceived.result?.track.name) {
           title.push(dataReceived.result?.track.name)
         }
-        if (title.length)
-          setTitle(title.join(' - '))
-        setLoading(false)
+        if (title.length){
+          setTrackTitle(title.join(' - '))
+        }
+      }
       
-        if (dataReceived.event === 'volume_changed' && dataReceived.volume) {
-          setMopidyVolumeValue(dataReceived.volume)
-          // setLoading(false)
+      if (dataReceived.event === 'volume_changed' && dataReceived.volume) {
+        setVolume(dataReceived.volume)
+      }
+      if (dataReceived.event === 'playback_state_changed') {
+        setPlaying(dataReceived.new_state === 'playing' ? true : false)
+      }
+      if (dataReceived.event === 'track_playback_resumed') {
+        setLoading(false) // play/pause scenario - when the title does not change
+      }
+      if (dataReceived.event === 'track_playback_started') {
+        const title = []
+        if (Array.isArray(dataReceived.tl_track.track.artists) && dataReceived.tl_track.track.artists.length) {
+          title.push(dataReceived.tl_track.track.artists[0]?.name)
         }
-        if (dataReceived.event === 'playback_state_changed') {
-          setPlaying(dataReceived.new_state === 'playing' ? true : false)
-          // if (dataReceived.new_state !== 'playing') setLoading(false)
+        if (dataReceived.tl_track?.track.name) {
+          title.push(dataReceived.tl_track?.track.name)
         }
-        if (dataReceived.event === 'track_playback_resumed') {
-          setLoading(false)
-        }
-        if (dataReceived.event === 'track_playback_started') {
-          const title = []
-          if (Array.isArray(dataReceived.tl_track.track.artists) && dataReceived.tl_track.track.artists.length) {
-            title.push(dataReceived.tl_track.track.artists[0]?.name)
-          }
-          if (dataReceived.tl_track?.track.name) {
-            title.push(dataReceived.tl_track?.track.name)
-          }
-          if (title.length)
-            setTitle(title.join(' - '))
-          
-          setLoading(false)
+        if (title.length) {
+          setTrackTitle(title.join(' - '))
+          setStreamTitle('')
         }
       }
 
       if (dataReceived.event === 'stream_title_changed') {
-        setStreamTitle(dataReceived.title)
-        setLoading(false)
         setWaitStreamTitle(false)
+        setStreamTitle(dataReceived.title)
       }
 
       setServerError('')
@@ -110,6 +106,13 @@ function Radio({url, name}) {
     }
   }, [])
 
+  React.useEffect(() => {
+    if (!waitStreamTitle) {
+      setTitle(streamTitle ? streamTitle : trackTitle)
+      setLoading(false)
+    }
+  }, [title, trackTitle, streamTitle, waitStreamTitle])
+
   const volumeChangeHandler = async (value) => {
     setLoading(true)
     const msg = JSON.stringify({method:'core.mixer.set_volume',params:{volume:value[0]},jsonrpc:'2.0',id:100})
@@ -123,9 +126,6 @@ function Radio({url, name}) {
 
   const stopHandler = async () => {
     setLoading(true)
-    setPlaying(false)
-    setWaitStreamTitle(true)
-
 
     const messages = [
       JSON.stringify({method:'core.playback.stop',jsonrpc:'2.0',id:101})
@@ -141,8 +141,10 @@ function Radio({url, name}) {
   }
 
   const playHandler = async () => {
+    if (streamTitle) {
+      setWaitStreamTitle(true)
+    }
     setLoading(true)
-    // setPlaying(true)
 
     const messages = [
       JSON.stringify({method:'core.playback.play',params:{},jsonrpc:'2.0',id:102})
@@ -158,7 +160,6 @@ function Radio({url, name}) {
 
   const pauseHandler = async() => {
     setLoading(true)
-    // setPlaying(false)
     const messages = [
       JSON.stringify({method:'core.playback.pause',params:{}, jsonrpc:'2.0',id:103})
     ];
@@ -173,11 +174,8 @@ function Radio({url, name}) {
   }
 
   const radioOnHandler = async (radio) => {
-    setLoading(true)
-    setPlaying(true)
-    setTitle('...')
-    setStreamTitle('...')
     setWaitStreamTitle(true)
+    setLoading(true)
     let stream;
     switch (radio) {
       case 'rns':
@@ -205,14 +203,19 @@ function Radio({url, name}) {
   return <View style={loading ? [styles.loading, styles.radioContainer] : styles.volumeContainer}>
       <Status 
         name={name} 
-        onReload={connectMopidy} 
+        onReload={() => {
+          socketMopidy?.close();
+          setStreamTitle('')
+          setTrackTitle('')
+          setSocketMopidy(connectMopidy())
+        }} 
         loading={loading} 
-        title={streamTitle ? 'ST: ' + streamTitle : 'T: ' + title} 
+        title={title} 
         serverError={serverError} 
         serverState={serverState}
       />
       <Slider
-        value={mopidyVolumeValue}
+        value={volume}
         minimumValue={0}
         maximumValue={100}
         step={1}
