@@ -126,6 +126,8 @@ function Radio({url, name}) {
 
   const stopHandler = async () => {
     setLoading(true)
+    setStreamTitle('')
+    setTrackTitle('')
 
     const messages = [
       JSON.stringify({method:'core.playback.stop',jsonrpc:'2.0',id:101})
@@ -200,6 +202,36 @@ function Radio({url, name}) {
       }
     }
   }
+  const wakeupHandler = async () => {
+    // setWaitStreamTitle(true)
+    setLoading(true)
+    const ALARMS_LIST = [
+      'file:///media/pi/KINGSTON/muzyka%20dla%20dzieci/budzenie/mix.mp3',
+      'file:///media/pi/KINGSTON/muzyka%20dla%20dzieci/budzenie/mix2c.mp3',
+      'file:///media/pi/KINGSTON/muzyka%20dla%20dzieci/budzenie/mix3b.mp3',
+      'file:///media/pi/KINGSTON/muzyka%20dla%20dzieci/budzenie/mix4.mp3',
+      'file:///media/pi/KINGSTON/muzyka%20dla%20dzieci/budzenie/budzenie5.mp3',
+      'file:///media/pi/KINGSTON/muzyka%20dla%20dzieci/budzenie/budzenie5.mp3',
+      'file:///media/pi/KINGSTON/muzyka%20dla%20dzieci/budzenie/budzenie5.mp3',
+    ]
+    const day = (new Date()).getDay()
+    const stream = ALARMS_LIST[day -1]
+
+    const messages = [
+      // JSON.stringify({jsonrpc:'2.0', method: 'core.mixer.set_volume', params:{volume:35},id:100}),
+      JSON.stringify({jsonrpc:'2.0', method: 'core.tracklist.clear', id:104}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.set_repeat', params: {'value': false}, id: 105}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.add', params:{'uris':[stream]}, id:106}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.playback.play', id: 107}),
+    ]
+    if (socketMopidy.readyState !== 1) {
+      setSocketMopidy(connectMopidy(messages))
+    } else {
+      for(msg of messages) {
+        await socketMopidy.send(msg)
+      }
+    }
+  }
   return <View style={loading ? [styles.loading, styles.radioContainer] : styles.volumeContainer}>
       <Status 
         name={name} 
@@ -226,12 +258,13 @@ function Radio({url, name}) {
         trackStyle={styles.track}
       />
       <View style={styles.controlsContainer}>
-        <IconButton onPress={() => radioOnHandler('357')}>
-          <Radio357 width={100} height={100} />
-        </IconButton>
         {!playing && <IconButton onPress={() => playHandler()} name='play'></IconButton>}
         {playing && <IconButton onPress={() => pauseHandler()} name='pause'></IconButton>}
         <IconButton onPress={() => stopHandler()} name='stop'></IconButton>
+        {name === 'Home' && <IconButton onPress={() => wakeupHandler()} name='alarm'></IconButton>}
+        <IconButton onPress={() => radioOnHandler('357')}>
+          <Radio357 width={100} height={100} />
+        </IconButton>
         <IconButton onPress={() => radioOnHandler('rns')}>
           <RadioNS width={100} height={100} />
         </IconButton>
