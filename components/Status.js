@@ -21,7 +21,7 @@ function Status({name, onReload, serverState, serverError, loading, title = ''})
             marqueeDelay={5000}
           >{state}</TextTicker>
       </View>
-      <View style={styles.iconContainer}>
+      <View>
         <IconButton onPress={onReload} name='reload-outline' />
       </View>
     </View>
@@ -37,7 +37,5 @@ const styles = StyleSheet.create({
   textContainer: {
     paddingVertical: 8,
     flexShrink: 1
-  },
-  iconContainer: {
   },
 })

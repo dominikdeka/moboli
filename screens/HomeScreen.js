@@ -5,18 +5,13 @@ import PrimaryButton from '../components/PrimaryButton';
 import Volume from '../components/Radio';
 import Status from '../components/Status';
 import Radio from '../components/Radio';
-// import { useSharedValue } from 'react-native-reanimated';
-// import { Slider } from 'react-native-awesome-slider';
+import { commonStyles } from '../styles/common';
 
 function HomeScreen() {
   const [serverState, setServerState] = React.useState('');
   const [serverError, setServerError] = React.useState('');
   const [socket, setSocket] = React.useState();
   const [states, setStates] = React.useState([]);
-
-  // const progress = useSharedValue(30);
-  // const min = useSharedValue(0);
-  // const max = useSharedValue(100);
 
   var pins = [2,3,14,4,15,18,17];
 
@@ -59,7 +54,7 @@ function HomeScreen() {
 
 
 return <>
-    <View style={styles.homeScreenContainer}>
+    <View style={commonStyles.screenContainer}>
 
       <Status name='GPIO' onReload={connect} serverError={serverError} serverState={serverState} />
       
@@ -114,16 +109,6 @@ return <>
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  homeScreenContainer: {
-    justifyContent: 'center',
-    alignItems: 'stretch',
-    padding: 16,
-    marginHorizontal:24,
-    backgroundColor: '#4e0329',
-    opacity: 0.8,
-    borderRadius: 8,
-    elevation: 4
-  },
   buttonsContainer: { 
     flexDirection: 'row',
     marginVertical: 10,
