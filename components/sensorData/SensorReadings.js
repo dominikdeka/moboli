@@ -2,22 +2,17 @@ import {View, Text, StyleSheet} from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { commonStyles } from '../../styles/common';
 
-function SensorReadings({gpioPin, onPress, state, children}) {
-  function pressHandler() {
-    if (onPress) {
-      onPress(gpioPin);
-    }
-  }
+function SensorReadings({sensorReading, children}) {
   return <View style={styles.readingsOuterContainer}>
       <Text style={styles.header}>{children}</Text>
       <View style={styles.readingsContainer}>
         <View style={styles.singleReadingContainer}>
           <Ionicons name="thermometer-outline" size={30} color="white" />
-          <Text style={commonStyles.text}>20 °C</Text>          
+          <Text style={commonStyles.text}>{sensorReading?.temperature.value} °C</Text>          
         </View>
         <View style={styles.singleReadingContainer}>
           <Ionicons name="water-outline" size={30} color="white" />
-          <Text style={commonStyles.text}>40 %</Text>          
+          <Text style={commonStyles.text}>{sensorReading?.hummidity.value} %</Text>          
         </View>
 
       </View>

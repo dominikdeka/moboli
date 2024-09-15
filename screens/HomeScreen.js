@@ -16,17 +16,17 @@ function HomeScreen() {
   var pins = [2,3,14,4,15,18,17];
 
   function connect(message = '') {
-    var ws = new WebSocket('ws://192.168.1.12:8899/');
-    setServerState('Connecting...')
+    var ws = new WebSocket(process.env.EXPO_PUBLIC_RADIO_GPIO_SERVER);
+    setServerState('Łączenie...')
     ws.onopen = () => {
-      setServerState('Connected')
+      setServerState('Połączono')
 
       if (message) {
         ws.send(message)
       }
     };
     ws.onclose = (e) => {
-      setServerState('Disconnected')
+      setServerState('Połączenie zerwane')
     };
     ws.onerror = (e) => {
       setServerError(e.message);
@@ -90,15 +90,15 @@ return <>
 
       <View style={styles.radioContainer}>
           <Radio 
-            name='Home'
-            url='ws://192.168.1.12:6680/mopidy/ws'
+            name='Radiowęzeł'
+            url={process.env.EXPO_PUBLIC_RADIO_HOME_SERVER}
           />
       </View>
 
       <View style={styles.radioContainer}>
           <Radio 
             name='Salon'
-            url='ws://192.168.1.36:6680/mopidy/ws'
+            url={process.env.EXPO_PUBLIC_RADIO_LIVINGROOM_SERVER}
           />
       </View>
 

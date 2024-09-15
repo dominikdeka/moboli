@@ -22,7 +22,7 @@ function Radio({url, name}) {
     setLoading(true)
     var ws = new WebSocket(url);
     ws.onopen = () => {
-      setServerState('Connected')
+      setServerState('Połączono')
 
       if (Array.isArray(messages) && messages.length) {
         messages.forEach(msg => ws.send(msg))
@@ -34,7 +34,7 @@ function Radio({url, name}) {
       ws.send(JSON.stringify({method:'core.playback.get_current_tl_track',jsonrpc:'2.0', id: 96}))
     };
     ws.onclose = (e) => {
-      setServerState('Disconnected')
+      setServerState('Połączenie zerwane')
     };
     ws.onerror = (e) => {
       console.log('error', e.message)
@@ -232,7 +232,7 @@ function Radio({url, name}) {
       }
     }
   }
-  return <View style={loading ? [styles.loading, styles.radioContainer] : styles.volumeContainer}>
+  return <View style={loading ? [styles.loading, styles.radioContainer] : styles.radioContainer}>
       <Status 
         name={name} 
         onReload={() => {
