@@ -232,6 +232,30 @@ function Radio({url, name}) {
       }
     }
   }
+
+  const alarmHandler = async () => {
+    setLoading(true)
+    const stream = 'file:///media/pi/KINGSTON/muzyka/lp3/LP3_1983/02%20Kocham%20Cie%2C%20kochanie%20moje.wma'
+
+    const messages = [
+      // JSON.stringify({jsonrpc:'2.0', method: 'core.mixer.set_volume', params:{volume:35},id:100}),
+      JSON.stringify({jsonrpc:'2.0', method: 'core.tracklist.clear', id:104}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.set_repeat', params: {'value': false}, id: 105}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.tracklist.add', params:{'uris':[stream]}, id:106}),
+      JSON.stringify({jsonrpc: '2.0', method: 'core.playback.play', id: 107}),
+    ]
+    if (socketMopidy.readyState !== 1) {
+      setSocketMopidy(connectMopidy(messages))
+    } else {
+      for(msg of messages) {
+        await socketMopidy.send(msg)
+      }
+    }
+    setTimeout(async () => {
+      await socketMopidy.send(JSON.stringify({method:"core.tracklist.clear",jsonrpc:"2.0",id:107}))
+    }, 10000);
+  }
+
   return <View style={loading ? [styles.loading, styles.radioContainer] : styles.radioContainer}>
       <Status 
         name={name} 
@@ -261,7 +285,8 @@ function Radio({url, name}) {
         {!playing && <IconButton onPress={() => playHandler()} name='play'></IconButton>}
         {playing && <IconButton onPress={() => pauseHandler()} name='pause'></IconButton>}
         <IconButton onPress={() => stopHandler()} name='stop'></IconButton>
-        {name === 'Home' && <IconButton onPress={() => wakeupHandler()} name='alarm'></IconButton>}
+        {name === 'Radiowęzeł' && <IconButton onPress={() => wakeupHandler()} name='alarm'></IconButton>}
+        {name === 'Radiowęzeł' && <IconButton onPress={() => alarmHandler()} name='megaphone'></IconButton>}
         <IconButton onPress={() => radioOnHandler('357')}>
           <Radio357 width={100} height={100} />
         </IconButton>

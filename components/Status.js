@@ -8,7 +8,7 @@ import TextTicker from 'react-native-text-ticker';
 function Status({name, onReload, serverState, serverError, loading, title = ''}) {
   const [state, setState] = React.useState('')
   React.useEffect(() => {
-    if (loading) setState(`${name}: Ładowanie...`);
+    if (loading) setState(`${name}: Łączenie...`);
     else if (serverError || !title) setState(`${name}: ${serverState}`);
     else setState(title);
   }, [serverState, loading, title])
