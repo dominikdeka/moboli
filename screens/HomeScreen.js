@@ -1,8 +1,7 @@
 import * as React from 'react';
 
-import { Text, View, StyleSheet } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import PrimaryButton from '../components/PrimaryButton';
-import Volume from '../components/Radio';
 import Status from '../components/Status';
 import Radio from '../components/Radio';
 import { commonStyles } from '../styles/common';

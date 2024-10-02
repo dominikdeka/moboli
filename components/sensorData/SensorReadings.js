@@ -1,9 +1,16 @@
-import {View, Text, StyleSheet} from 'react-native'
+import {View, Text, StyleSheet, Pressable} from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { commonStyles } from '../../styles/common';
+import { useNavigation } from '@react-navigation/native';
 
 function SensorReadings({sensorReading, children}) {
-  return <View style={styles.readingsOuterContainer}>
+  const navigation = useNavigation();
+
+  function pressHandler() {
+    navigation.navigate('ChartScreen', { sensorName: children })
+  }
+
+  return <Pressable style={styles.readingsOuterContainer} onPress={pressHandler} android_ripple={{ color: '#ffff33' }}>
       <Text style={styles.header}>{children}</Text>
       <View style={styles.readingsContainer}>
         <View style={styles.singleReadingContainer}>
@@ -16,12 +23,13 @@ function SensorReadings({sensorReading, children}) {
         </View>
 
       </View>
-    </View>
+  </Pressable>
 }
 
 export default SensorReadings;
 
 const styles = StyleSheet.create({
+
   readingsOuterContainer: {
     overflow: 'hidden',
     flex: 1,

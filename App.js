@@ -5,9 +5,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import HomeScreen from './screens/HomeScreen';
 import SensorDataScreen from './screens/SensorDataScreen';
 import { StatusBar } from "expo-status-bar";
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Ionicons from '@expo/vector-icons/Ionicons'
+
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-const Tab = createMaterialTopTabNavigator();
+import SensorsScreen from './screens/SensorsScreen';
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   const MyTheme = {
@@ -19,7 +22,7 @@ export default function App() {
   };
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style="light" backgroundColor='#4e0329' translucent={false} />
       <LinearGradient colors={['#4e0329', '#ddb52f']} style={styles.rootScreeen}>
         <ImageBackground
           source={require('./assets/images/20190712_191507.jpg')} 
@@ -29,18 +32,28 @@ export default function App() {
           >
           <NavigationContainer theme={MyTheme}>
             <Tab.Navigator
-              sceneContainerStyle={{ flex: 1, justifyContent: 'space-around' }}
+              sceneContainerStyle={{ flexDirection: 'row', alignItems: 'center' }}
               screenOptions={{
-                tabBarShowLabel: false,
+                headerShown: false,
+                // tabBarStyle: { backgroundColor: '#4e0329' },
+                tabBarShowLabel: false
               }}>
               <Tab.Screen
                 name="Home"
                 component={HomeScreen}
-                options={{title: 'Welcome'}}
+                options={{
+                  title: 'Welcome',
+                  tabBarIcon: ({color, size})=> <Ionicons name='musical-notes' size={size} color={color} />
+                  }}
                 />
               <Tab.Screen
-                name="SensorDataScreen"
-                component={SensorDataScreen}
+                name="SensorsScreen"
+                component={SensorsScreen}
+                options={{
+                  title: 'Pomiary',
+                  tabBarIcon: ({color, size})=> <Ionicons name='thermometer-outline' size={size} color={color} />,
+                  unmountOnBlur: true
+                  }}
                 />
 
             </Tab.Navigator>

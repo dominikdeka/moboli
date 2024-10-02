@@ -15,7 +15,6 @@ export const commonStyles = StyleSheet.create({
   },
   screenContainer: {
     justifyContent: 'center',
-    alignItems: 'stretch',
     padding: 16,
     marginHorizontal:24,
     backgroundColor: '#4e0329',

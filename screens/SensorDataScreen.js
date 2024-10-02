@@ -88,7 +88,7 @@ function SensorDataScreen() {
     })
   }, [sensorReadings])  
   return (
-    <View style={loading ? [styles.loading, commonStyles.screenContainer]: commonStyles.screenContainer}>
+  <View style={loading ? [styles.loading, { flex: 1}]: [{ flex: 1}]}>
       <Status name='Pomiary' onReload={() => {
           mqttClient?.disconnect();
           setMqttClient(connect())
