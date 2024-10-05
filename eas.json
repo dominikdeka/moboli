@@ -13,7 +13,6 @@
       },
       "distribution": "internal",
       "env": {
-        "EXPO_UNSTABLE_ATLAS": "true" 
       }
     },
     "production": {}

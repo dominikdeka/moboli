@@ -1,5 +1,5 @@
+import 'react-native-gesture-handler';
 import * as React from 'react';
-
 import { StyleSheet, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import HomeScreen from './screens/HomeScreen';
