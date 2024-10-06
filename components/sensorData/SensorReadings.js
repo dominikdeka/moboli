@@ -1,6 +1,6 @@
 import {View, Text, StyleSheet, Pressable} from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { commonStyles } from '../../styles/common';
+import { COLORS, commonStyles } from '../../styles/common';
 import { useNavigation } from '@react-navigation/native';
 
 function SensorReadings({sensorReading, children}) {
@@ -39,14 +39,14 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     fontSize: 18,
-    backgroundColor: '#dd2222',
+    backgroundColor: COLORS.RED,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
     fontWeight: '400'
 
   },
   readingsContainer: {
-    backgroundColor: 'green',
+    backgroundColor: COLORS.GREEN,
     alignItems: 'center',
     justifyContent: 'space-evenly',
     borderBottomLeftRadius: 8,

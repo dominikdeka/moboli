@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import { StyleSheet, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import HomeScreen from './screens/HomeScreen';
+import RadioScreen from './screens/RadioScreen';
 import { StatusBar } from "expo-status-bar";
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -30,15 +30,15 @@ export default function App() {
           >
           <NavigationContainer theme={MyTheme}>
             <Tab.Navigator
-              initialRouteName="Home"
+              initialRouteName="Radio"
               tabBarPosition="bottom"
               screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
               }}>
               <Tab.Screen
-                name="Home"
-                component={HomeScreen}
+                name="Radio"
+                component={RadioScreen}
                 options={{
                   title: 'Welcome',
                   tabBarIcon: ({focused, color})=> <Ionicons name='musical-notes' size={24} color={!focused ? color : 'blue'} />

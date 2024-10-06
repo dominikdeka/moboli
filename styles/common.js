@@ -1,8 +1,10 @@
 import {StyleSheet} from 'react-native';
-const COLORS = {
+export const COLORS = {
     BLACK: 'black',
     WHITE: 'white',
-    ERROR: '#ff7777'
+    ERROR: '#ff7777',
+    RED: '#dd2222',
+    GREEN: 'green'
 };
 export const commonStyles = StyleSheet.create({
   error: {

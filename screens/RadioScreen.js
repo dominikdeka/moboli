@@ -6,7 +6,7 @@ import Status from '../components/Status';
 import Radio from '../components/Radio';
 import { commonStyles } from '../styles/common';
 
-function HomeScreen() {
+function RadioScreen() {
   const [serverState, setServerState] = React.useState('');
   const [serverError, setServerError] = React.useState('');
   const [socket, setSocket] = React.useState();
@@ -105,7 +105,7 @@ return <View style={commonStyles.screenOuterContainer}>
   </View>
 }
 
-export default HomeScreen;
+export default RadioScreen;
 
 const styles = StyleSheet.create({
   buttonsContainer: { 

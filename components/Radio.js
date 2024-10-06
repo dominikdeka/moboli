@@ -53,7 +53,7 @@ function Radio({url, name}) {
         setPlaying(dataReceived.result === 'playing' ? true : false)
       }
       if (dataReceived.id === 96
-          && (dataReceived.result?.track.name || (Array.isArray(dataReceived.result.artists) && dataReceived.result.artists.length))) {
+          && (dataReceived.result?.track.name || (Array.isArray(dataReceived.result?.artists) && dataReceived.result.artists.length))) {
         const title = []
         if (Array.isArray(dataReceived.result.track.artists) && dataReceived.result.track.artists.length) {
           title.push(dataReceived.result.track.artists[0]?.name)

@@ -1,6 +1,6 @@
 {
   "name": "moboli",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start --port 8081",
@@ -21,13 +21,14 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
+    "react-native-chart-kit": "^6.12.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-pager-view": "6.3.0",
     "react-native-paho-mqtt": "^0.1.1",
     "react-native-reanimated": "~3.10.1",
     "react-native-safe-area-context": "4.10.5",
     "react-native-screens": "3.31.1",
-    "react-native-svg": "15.2.0",
+    "react-native-svg": "^15.2.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-text-ticker": "^1.14.0",
     "react-native-web": "~0.19.6"

@@ -36,7 +36,7 @@ function SensorsScreen({navigation}) {
           component={ChartScreen}
           options={{
             title: 'Wykres',
-            headerShown: true
+            // headerShown: true
             }}
           />
       </Stack.Navigator>
