@@ -13,10 +13,15 @@ export const commonStyles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.WHITE,
   },
+  screenOuterContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
   screenContainer: {
     justifyContent: 'center',
     padding: 16,
-    marginHorizontal:24,
+    marginHorizontal:20,
     backgroundColor: '#4e0329',
     opacity: 0.8,
     borderRadius: 8,

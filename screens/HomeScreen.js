@@ -52,7 +52,7 @@ function HomeScreen() {
   }
 
 
-return <>
+return <View style={commonStyles.screenOuterContainer}>
     <View style={commonStyles.screenContainer}>
 
       <Status name='GPIO' onReload={connect} serverError={serverError} serverState={serverState} />
@@ -102,7 +102,7 @@ return <>
       </View>
 
     </View>
-  </>
+  </View>
 }
 
 export default HomeScreen;

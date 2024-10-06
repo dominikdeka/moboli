@@ -3,14 +3,12 @@ import * as React from 'react';
 import { StyleSheet, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import HomeScreen from './screens/HomeScreen';
-import SensorDataScreen from './screens/SensorDataScreen';
 import { StatusBar } from "expo-status-bar";
 import Ionicons from '@expo/vector-icons/Ionicons'
-
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import SensorsScreen from './screens/SensorsScreen';
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 export default function App() {
   const MyTheme = {
@@ -32,18 +30,18 @@ export default function App() {
           >
           <NavigationContainer theme={MyTheme}>
             <Tab.Navigator
-              sceneContainerStyle={{ flexDirection: 'row', alignItems: 'center' }}
+              initialRouteName="Home"
+              tabBarPosition="bottom"
               screenOptions={{
                 headerShown: false,
-                // tabBarStyle: { backgroundColor: '#4e0329' },
-                tabBarShowLabel: false
+                tabBarShowLabel: false,
               }}>
               <Tab.Screen
                 name="Home"
                 component={HomeScreen}
                 options={{
                   title: 'Welcome',
-                  tabBarIcon: ({color, size})=> <Ionicons name='musical-notes' size={size} color={color} />
+                  tabBarIcon: ({focused, color})=> <Ionicons name='musical-notes' size={24} color={!focused ? color : 'blue'} />
                   }}
                 />
               <Tab.Screen
@@ -51,8 +49,7 @@ export default function App() {
                 component={SensorsScreen}
                 options={{
                   title: 'Pomiary',
-                  tabBarIcon: ({color, size})=> <Ionicons name='thermometer-outline' size={size} color={color} />,
-                  unmountOnBlur: true
+                  tabBarIcon: ({focused, color})=> <Ionicons name='thermometer-outline' size={24} color={!focused ? color : 'blue'} />,
                   }}
                 />
 

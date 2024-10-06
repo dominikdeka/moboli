@@ -88,45 +88,50 @@ function SensorDataScreen() {
     })
   }, [sensorReadings])  
   return (
-  <View style={loading ? [styles.loading, { flex: 1}]: [{ flex: 1}]}>
-      <Status name='Pomiary' onReload={() => {
-          mqttClient?.disconnect();
-          setMqttClient(connect())
-        }} serverError={serverError} serverState={serverState} loading={loading}  />
-      {/* <ImageBackground
-          source={require('../assets/images/ver1.png')} 
-          resizeMode='cover' 
-          > */}
-      <View style={loading ? [styles.loading, styles.sensorsOuterContainer] : styles.sensorsOuterContainer}>
+    <View style={commonStyles.screenOuterContainer}>
 
-        <View style={styles.sensorsInnerContainer}>
-          <View style={styles.sensorContainer}>    
-            <SensorReadings sensorReading={sensorReadings[0]}>Poddasze</SensorReadings>
-          </View>
-          <View style={styles.sensorContainer}>    
-            <SensorReadings sensorReading={sensorReadings[1]}>I Piętro</SensorReadings>
-          </View>
-          <View style={styles.sensorContainer}>    
-            <SensorReadings sensorReading={sensorReadings[2]}>Parter</SensorReadings>
-          </View>
-          <View style={styles.sensorContainer}>    
-            <SensorReadings sensorReading={sensorReadings[3]}>Pralnia</SensorReadings>
-          </View>
-        </View>
+      <View style={commonStyles.screenContainer}>
+        <View style={loading ? [styles.loading, { flex: 1}]: [{ flex: 1}]}>
+          <Status name='Pomiary' onReload={() => {
+              mqttClient?.disconnect();
+              setMqttClient(connect())
+            }} serverError={serverError} serverState={serverState} loading={loading}  />
+          {/* <ImageBackground
+              source={require('../assets/images/ver1.png')} 
+              resizeMode='cover' 
+              > */}
+          <View style={loading ? [styles.loading, styles.sensorsOuterContainer] : styles.sensorsOuterContainer}>
 
-        <View style={styles.sensorsInnerContainer}>
-          <View style={{ flex: 1 }}></View>
-          <View style={[styles.sensorContainer, { flex: 1 }]}>    
-            <SensorReadings sensorReading={sensorReadings[4]}>Na zewnątrz</SensorReadings>
+            <View style={styles.sensorsInnerContainer}>
+              <View style={styles.sensorContainer}>    
+                <SensorReadings sensorReading={sensorReadings[0]}>Poddasze</SensorReadings>
+              </View>
+              <View style={styles.sensorContainer}>    
+                <SensorReadings sensorReading={sensorReadings[1]}>I Piętro</SensorReadings>
+              </View>
+              <View style={styles.sensorContainer}>    
+                <SensorReadings sensorReading={sensorReadings[2]}>Parter</SensorReadings>
+              </View>
+              <View style={styles.sensorContainer}>    
+                <SensorReadings sensorReading={sensorReadings[3]}>Pralnia</SensorReadings>
+              </View>
+            </View>
+
+            <View style={styles.sensorsInnerContainer}>
+              <View style={{ flex: 1 }}></View>
+              <View style={[styles.sensorContainer, { flex: 1 }]}>    
+                <SensorReadings sensorReading={sensorReadings[4]}>Na zewnątrz</SensorReadings>
+              </View>
+              <View style={{ flex: 1 }}></View>
+              <View style={[styles.sensorContainer, { flex: 1 }]}>    
+                <SensorReadings sensorReading={sensorReadings[5]}>Pod tarasem</SensorReadings>
+              </View>
+            </View>
           </View>
-          <View style={{ flex: 1 }}></View>
-          <View style={[styles.sensorContainer, { flex: 1 }]}>    
-            <SensorReadings sensorReading={sensorReadings[5]}>Pod tarasem</SensorReadings>
-          </View>
+
+          {/* </ImageBackground> */}
         </View>
       </View>
-
-      {/* </ImageBackground> */}
     </View>
   )
 }

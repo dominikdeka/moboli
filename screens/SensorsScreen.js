@@ -8,20 +8,21 @@ import { useEffect } from 'react';
 
 const Stack = createStackNavigator();
 
-function SensorsScreen() {
-  const navigation = useNavigation();
+function SensorsScreen({navigation}) {
   useEffect(() => {
-    navigation.navigate('SensorDataScreen')
-  }, []);
+    const unsubscribe = navigation.addListener('tabPress', (e) => {
+      e.preventDefault();
+      navigation.navigate('SensorDataScreen')
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
+
   return (
-    <View style={commonStyles.screenContainer}>
       <Stack.Navigator
-        initialRouteName="SensorDataScreen"
         screenOptions={{
           headerShown: false,
-          // tabBarStyle: { backgroundColor: '#4e0329' },
           tabBarShowLabel: false, 
-          cardStyle: { flex: 1 }
         }}>
         <Stack.Screen
           name="SensorDataScreen"
@@ -39,7 +40,6 @@ function SensorsScreen() {
             }}
           />
       </Stack.Navigator>
-    </View>
   )
 }
 

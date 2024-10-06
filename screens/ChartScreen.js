@@ -6,12 +6,15 @@ function ChartScreen() {
   const route = useRoute();
 
   return (
-    <View style={styles.chartOuterContainer}>
-      <Text style={commonStyles.text}>
-        Wykres: {route.params.sensorName}!
-      </Text>
+    <View style={commonStyles.screenOuterContainer}>
+      <View style={commonStyles.screenContainer}>
+        <View style={styles.chartOuterContainer}>
+          <Text style={commonStyles.text}>
+            Wykres: {route.params.sensorName}!
+          </Text>
+        </View>
+      </View>    
     </View>
-    
   )
 }
 
