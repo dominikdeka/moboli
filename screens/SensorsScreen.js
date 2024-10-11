@@ -1,14 +1,17 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import SensorDataScreen from './SensorDataScreen';
 import ChartScreen from './ChartScreen';
-import { commonStyles } from '../styles/common';
-import { View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useEffect } from 'react';
-
+import { fetchReadings } from '../store/thingspeak';
+import { useDispatch } from 'react-redux';
 const Stack = createStackNavigator();
 
 function SensorsScreen({navigation}) {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(fetchReadings())
+  }, [])
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('tabPress', (e) => {
       e.preventDefault();

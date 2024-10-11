@@ -4,10 +4,12 @@ import { COLORS, commonStyles } from "../styles/common";
 import {
   LineChart,
 } from "react-native-chart-kit";
+import { useSelector } from "react-redux";
 
 function ChartScreen() {
   const route = useRoute();
-
+  const readings = useSelector((state) => state.thingspeak.readings);
+  const loading = useSelector((state) => state.thingspeak.loading);
   return (
     <View style={commonStyles.screenOuterContainer}>
       <View style={commonStyles.screenContainer}>
@@ -17,19 +19,12 @@ function ChartScreen() {
           </Text>
         </View>
 
-        <LineChart
+        {!loading && <LineChart
           data={{
-            labels: ["I", "II", "III", "IV", "V", "VI"],
+            // labels: ["I", "II", "III", "IV", "V", "VI"],
             datasets: [
               {
-                data: [
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100
-                ]
+                data: Object.values(readings[173692]['field1'])
               }
             ]
           }}
@@ -49,8 +44,8 @@ function ChartScreen() {
               borderRadius: 16
             },
             propsForDots: {
-              r: "6",
-              strokeWidth: "2",
+              r: "2",
+              strokeWidth: "1",
               stroke: COLORS.RED
             }
           }}
@@ -59,7 +54,7 @@ function ChartScreen() {
             marginVertical: 8,
             borderRadius: 16
           }}
-        />        
+        />}
 
 
       <View style={styles.headerContainer}>
@@ -68,19 +63,12 @@ function ChartScreen() {
           </Text>
       </View>
 
-      <LineChart
+      {!loading && <LineChart
           data={{
-            labels: ["I", "II", "III", "IV", "V", "VI"],
+            // labels: ["I", "II", "III", "IV", "V", "VI"],
             datasets: [
               {
-                data: [
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100
-                ]
+                data: Object.values(readings[173692]['field2'])
               }
             ]
           }}
@@ -100,8 +88,8 @@ function ChartScreen() {
               borderRadius: 16
             },
             propsForDots: {
-              r: "6",
-              strokeWidth: "2",
+              r: "2",
+              strokeWidth: "1",
               stroke: COLORS.RED
             }
           }}
@@ -110,7 +98,7 @@ function ChartScreen() {
             marginVertical: 8,
             borderRadius: 16
           }}
-        />
+        />}
       </View>    
     </View>
   )

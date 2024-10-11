@@ -1,15 +1,16 @@
 import 'react-native-gesture-handler';
 import * as React from 'react';
 import { StyleSheet, ImageBackground } from 'react-native';
+import { Provider } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
-import RadioScreen from './screens/RadioScreen';
 import { StatusBar } from "expo-status-bar";
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import RadioScreen from './screens/RadioScreen';
 import SensorsScreen from './screens/SensorsScreen';
 const Tab = createMaterialTopTabNavigator();
-
+import { store } from './store/store';
 export default function App() {
   const MyTheme = {
     ...DefaultTheme,
@@ -28,34 +29,36 @@ export default function App() {
           style={styles.rootScreeen}
           imageStyle={styles.backgroundImage}
           >
-          <NavigationContainer theme={MyTheme}>
-            <Tab.Navigator
-              initialRouteName="Radio"
-              tabBarPosition="bottom"
-              screenOptions={{
-                headerShown: false,
-                tabBarShowLabel: false,
-              }}>
-              <Tab.Screen
-                name="Radio"
-                component={RadioScreen}
-                options={{
-                  title: 'Welcome',
-                  tabBarIcon: ({focused, color})=> <Ionicons name='musical-notes' size={24} color={!focused ? color : 'blue'} />
-                  }}
-                />
-              <Tab.Screen
-                name="SensorsScreen"
-                component={SensorsScreen}
-                options={{
-                  title: 'Pomiary',
-                  tabBarIcon: ({focused, color})=> <Ionicons name='thermometer-outline' size={24} color={!focused ? color : 'blue'} />,
-                  }}
-                />
+          <Provider store={store}>
 
-            </Tab.Navigator>
-          </NavigationContainer>
+            <NavigationContainer theme={MyTheme}>
+              <Tab.Navigator
+                initialRouteName="Radio"
+                tabBarPosition="bottom"
+                screenOptions={{
+                  headerShown: false,
+                  tabBarShowLabel: false,
+                }}>
+                <Tab.Screen
+                  name="Radio"
+                  component={RadioScreen}
+                  options={{
+                    title: 'Welcome',
+                    tabBarIcon: ({focused, color})=> <Ionicons name='musical-notes' size={24} color={!focused ? color : 'blue'} />
+                    }}
+                  />
+                <Tab.Screen
+                  name="SensorsScreen"
+                  component={SensorsScreen}
+                  options={{
+                    title: 'Pomiary',
+                    tabBarIcon: ({focused, color})=> <Ionicons name='thermometer-outline' size={24} color={!focused ? color : 'blue'} />,
+                    }}
+                  />
 
+              </Tab.Navigator>
+            </NavigationContainer>
+          </Provider>
         </ImageBackground>
       </LinearGradient>
     </>
