@@ -1,15 +1,18 @@
 import { Dimensions, StyleSheet, Text, View } from "react-native"
 import { useRoute } from '@react-navigation/native';
 import { COLORS, commonStyles } from "../styles/common";
-import {
-  LineChart,
-} from "react-native-chart-kit";
+import { LineChart } from "react-native-chart-kit";
 import { useSelector } from "react-redux";
+import { sensors } from "../config/sensors.js";
+
 
 function ChartScreen() {
   const route = useRoute();
   const readings = useSelector((state) => state.thingspeak.readings);
   const loading = useSelector((state) => state.thingspeak.loading);
+  const channel = sensors[route.params.id].temperature.thingspeakReadings.channel;
+  const temperatureField = sensors[route.params.id].temperature.thingspeakReadings.field;
+  const hummidityField = sensors[route.params.id].hummidity.thingspeakReadings.field;
   return (
     <View style={commonStyles.screenOuterContainer}>
       <View style={commonStyles.screenContainer}>
@@ -24,7 +27,7 @@ function ChartScreen() {
             // labels: ["I", "II", "III", "IV", "V", "VI"],
             datasets: [
               {
-                data: Object.values(readings[173692]['field1'])
+                data: Object.values(readings[channel][temperatureField])
               }
             ]
           }}
@@ -68,7 +71,7 @@ function ChartScreen() {
             // labels: ["I", "II", "III", "IV", "V", "VI"],
             datasets: [
               {
-                data: Object.values(readings[173692]['field2'])
+                data: Object.values(readings[channel][hummidityField])
               }
             ]
           }}

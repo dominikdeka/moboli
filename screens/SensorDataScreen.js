@@ -5,7 +5,7 @@ import SensorReadings from "../components/sensorData/SensorReadings";
 import { Client } from 'react-native-paho-mqtt';
 import Status from "../components/Status";
 import MQTTStorage from "../utils/MQTTStorage.js";
-import { sensors } from "../config/mqtt";
+import { sensors } from "../config/sensors.js";
 
 function SensorDataScreen() {
   const [serverState, setServerState] = React.useState('');
@@ -35,8 +35,8 @@ function SensorDataScreen() {
         setServerState('Połączono')
 
         sensors.forEach(sensor => {
-          client.subscribe(sensor.temperature.channel);
-          client.subscribe(sensor.hummidity.channel);
+          client.subscribe(sensor.temperature.mqttChannel);
+          client.subscribe(sensor.hummidity.mqttChannel);
         });
       })
       .catch((responseObject) => {
@@ -58,7 +58,7 @@ function SensorDataScreen() {
     setSensorReadings((sr) => {
       const readings = [...sr]
       return readings.map((sensor) => {
-        if (sensor.hummidity.channel === newReading?.name) {
+        if (sensor.hummidity.mqttChannel === newReading?.name) {
           return {
             ...sensor,
             hummidity: {
@@ -67,7 +67,7 @@ function SensorDataScreen() {
             }
           }
         }
-        if (sensor.temperature.channel === newReading?.name) {
+        if (sensor.temperature.mqttChannel === newReading?.name) {
           return {
             ...sensor,
             temperature: {
@@ -104,27 +104,27 @@ function SensorDataScreen() {
 
             <View style={styles.sensorsInnerContainer}>
               <View style={styles.sensorContainer}>    
-                <SensorReadings sensorReading={sensorReadings[0]}>Poddasze</SensorReadings>
+                <SensorReadings sensorReading={sensorReadings[0]} id={0}>{sensorReadings[0].label}</SensorReadings>
               </View>
               <View style={styles.sensorContainer}>    
-                <SensorReadings sensorReading={sensorReadings[1]}>I Piętro</SensorReadings>
+                <SensorReadings sensorReading={sensorReadings[1]} id={1}>{sensorReadings[1].label}</SensorReadings>
               </View>
               <View style={styles.sensorContainer}>    
-                <SensorReadings sensorReading={sensorReadings[2]}>Parter</SensorReadings>
+                <SensorReadings sensorReading={sensorReadings[2]} id={2}>{sensorReadings[2].label}</SensorReadings>
               </View>
               <View style={styles.sensorContainer}>    
-                <SensorReadings sensorReading={sensorReadings[3]}>Pralnia</SensorReadings>
+                <SensorReadings sensorReading={sensorReadings[3]} id={3}>{sensorReadings[3].label}</SensorReadings>
               </View>
             </View>
 
             <View style={styles.sensorsInnerContainer}>
               <View style={{ flex: 1 }}></View>
               <View style={[styles.sensorContainer, { flex: 1 }]}>    
-                <SensorReadings sensorReading={sensorReadings[4]}>Na zewnątrz</SensorReadings>
+                <SensorReadings sensorReading={sensorReadings[4]} id={4}>{sensorReadings[4].label}</SensorReadings>
               </View>
               <View style={{ flex: 1 }}></View>
               <View style={[styles.sensorContainer, { flex: 1 }]}>    
-                <SensorReadings sensorReading={sensorReadings[5]}>Pod tarasem</SensorReadings>
+                <SensorReadings sensorReading={sensorReadings[5]} id={5}>{sensorReadings[5].label}</SensorReadings>
               </View>
             </View>
           </View>

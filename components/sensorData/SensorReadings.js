@@ -3,11 +3,11 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { COLORS, commonStyles } from '../../styles/common';
 import { useNavigation } from '@react-navigation/native';
 
-function SensorReadings({sensorReading, children}) {
+function SensorReadings({sensorReading, children, id}) {
   const navigation = useNavigation();
 
   function pressHandler() {
-    navigation.navigate('ChartScreen', { sensorName: children })
+    navigation.navigate('ChartScreen', { sensorName: children, id })
   }
 
   return <Pressable style={styles.readingsOuterContainer} onPress={pressHandler} android_ripple={{ color: '#ffff33' }}>
