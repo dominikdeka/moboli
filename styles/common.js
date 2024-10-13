@@ -29,5 +29,8 @@ export const commonStyles = StyleSheet.create({
     borderRadius: 8,
     elevation: 4,
     flex: 0.9
+  }, 
+  loading: {
+    opacity: 0.6
   }
 });

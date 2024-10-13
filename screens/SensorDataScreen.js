@@ -6,12 +6,14 @@ import { Client } from 'react-native-paho-mqtt';
 import Status from "../components/Status";
 import MQTTStorage from "../utils/MQTTStorage.js";
 import { sensors } from "../config/sensors.js";
+import { useDispatch } from "react-redux";
+import { fetchReadings } from "../store/thingspeak.js";
 
 function SensorDataScreen() {
   const [serverState, setServerState] = React.useState('');
   const [serverError, setServerError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
-
+  const dispatch = useDispatch();
   const [mqttClient, setMqttClient] = React.useState();
   const [sensorReadings, setSensorReadings] = React.useState(sensors);
   const [newReading, setNewReading] = React.useState();
@@ -90,11 +92,12 @@ function SensorDataScreen() {
   return (
     <View style={commonStyles.screenOuterContainer}>
 
-      <View style={commonStyles.screenContainer}>
-        <View style={loading ? [styles.loading, { flex: 1}]: [{ flex: 1}]}>
+      <View style={loading ? [commonStyles.screenContainer, commonStyles.loading] : [commonStyles.screenContainer]}>
+        {/* <View style={loading ? [styles.loading, { flex: 1}]: [{ flex: 1}]}> */}
           <Status name='Pomiary' onReload={() => {
               mqttClient?.disconnect();
               setMqttClient(connect())
+              dispatch(fetchReadings())
             }} serverError={serverError} serverState={serverState} loading={loading}  />
           {/* <ImageBackground
               source={require('../assets/images/ver1.png')} 
@@ -130,7 +133,7 @@ function SensorDataScreen() {
           </View>
 
           {/* </ImageBackground> */}
-        </View>
+        {/* </View> */}
       </View>
     </View>
   )
@@ -153,8 +156,5 @@ const styles = StyleSheet.create({
   },
   sensorContainer: {
     flex: 1
-  },
-  loading: {
-    opacity: 0.5,
   }
 });

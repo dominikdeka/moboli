@@ -2,29 +2,46 @@ import { Dimensions, StyleSheet, Text, View } from "react-native"
 import { useRoute } from '@react-navigation/native';
 import { COLORS, commonStyles } from "../styles/common";
 import { LineChart } from "react-native-chart-kit";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { sensors } from "../config/sensors.js";
+import { fetchReadings } from "../store/thingspeak.js";
+import Status from "../components/Status.js";
 
-
+const mapDate = (date, index) => {
+  if (index % 4 !== 0) return ''
+  const time = new Date(date);
+  const hours = time.getHours().toString().padStart(2, '0');
+  const minutes = time.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
 function ChartScreen() {
   const route = useRoute();
+  const dispatch = useDispatch();
   const readings = useSelector((state) => state.thingspeak.readings);
   const loading = useSelector((state) => state.thingspeak.loading);
+  const serverError = useSelector((state) => state.thingspeak.serverError);
+  const serverState = useSelector((state) => state.thingspeak.serverState);
   const channel = sensors[route.params.id].temperature.thingspeakReadings.channel;
   const temperatureField = sensors[route.params.id].temperature.thingspeakReadings.field;
   const hummidityField = sensors[route.params.id].hummidity.thingspeakReadings.field;
   return (
     <View style={commonStyles.screenOuterContainer}>
-      <View style={commonStyles.screenContainer}>
+      <View style={loading ? [commonStyles.screenContainer, commonStyles.loading] : [commonStyles.screenContainer]}>
+        <Status 
+          name='Poprzednie 24H' 
+          onReload={() => dispatch(fetchReadings())} 
+          serverError={serverError} 
+          serverState={serverState} 
+          loading={loading}  />
         <View style={styles.headerContainer}>
           <Text style={commonStyles.text}>
-            Zmiana temperatur: {route.params.sensorName}
+            Temperatury: {route.params.sensorName}
           </Text>
         </View>
 
-        {!loading && <LineChart
+        {loading ? <View style={styles.loadingContainer} /> : <LineChart
           data={{
-            // labels: ["I", "II", "III", "IV", "V", "VI"],
+            labels: Object.keys(readings[channel][temperatureField]).map(mapDate),
             datasets: [
               {
                 data: Object.values(readings[channel][temperatureField])
@@ -32,8 +49,10 @@ function ChartScreen() {
             ]
           }}
           width={Dimensions.get("window").width-72} // from react-native
-          height={200}
+          height={210}
           yAxisLabel=""
+          xLabelsOffset={10}
+          verticalLabelRotation={290}
           yAxisSuffix="°C"
           yAxisInterval={1} // optional, defaults to 1
           chartConfig={{
@@ -44,7 +63,8 @@ function ChartScreen() {
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             style: {
-              borderRadius: 16
+              borderRadius: 16,
+              paddingVertical: 20
             },
             propsForDots: {
               r: "2",
@@ -62,13 +82,13 @@ function ChartScreen() {
 
       <View style={styles.headerContainer}>
           <Text style={commonStyles.text}>
-            Zmiana wilgotności: {route.params.sensorName}
+            Wilgotność: {route.params.sensorName}
           </Text>
       </View>
 
-      {!loading && <LineChart
+      {loading ? <View style={styles.loadingContainer} /> : <LineChart
           data={{
-            // labels: ["I", "II", "III", "IV", "V", "VI"],
+            labels: Object.keys(readings[channel][hummidityField]).map(mapDate),
             datasets: [
               {
                 data: Object.values(readings[channel][hummidityField])
@@ -76,10 +96,12 @@ function ChartScreen() {
             ]
           }}
           width={Dimensions.get("window").width-72} // from react-native
-          height={200}
+          height={210}
           yAxisLabel=""
           yAxisSuffix="%"
           yAxisInterval={1} // optional, defaults to 1
+          xLabelsOffset={10}
+          verticalLabelRotation={290}
           chartConfig={{
             backgroundColor: COLORS.GREEN,
             backgroundGradientFrom: COLORS.GREEN,
@@ -115,5 +137,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     gap: 16,
     // flex: 1
+  },
+  loadingContainer: {
+    borderRadius: 16,
+    width: Dimensions.get("window").width-72,
+    height:210,
+    backgroundColor: COLORS.GREEN,
+    marginVertical: 8,
   }
 })
