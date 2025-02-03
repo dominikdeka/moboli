@@ -24,6 +24,7 @@
       },
       "package": "com.dominikdeka.moBoli",
       "permissions": [
+        "android.permission.INTERNET",
         "android.permission.INTERNET"
       ]
     },
@@ -44,6 +45,12 @@
           }
         }
       ]
-    ]
+    ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/518399b1-7140-4c89-9d85-470065a513ad"
+    }
   }
 }

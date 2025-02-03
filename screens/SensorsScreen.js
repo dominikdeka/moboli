@@ -4,7 +4,7 @@ import ChartScreen from './ChartScreen';
 import { useEffect } from 'react';
 import { fetchReadings } from '../store/thingspeak';
 import { useDispatch } from 'react-redux';
-import { CommonActions, useNavigationState } from '@react-navigation/native';
+import { useNavigationState } from '@react-navigation/native';
 const Stack = createStackNavigator();
 
 function SensorsScreen({navigation}) {
@@ -14,17 +14,18 @@ function SensorsScreen({navigation}) {
     dispatch(fetchReadings())
   }, [])
 
-  useEffect(() => {
-    if (index === 0) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "SensorDataScreen" }]
-      });
-    }
-  }, [navigation, index]);
+  // useEffect(() => {
+  //   if (index === 0) {
+  //     navigation.reset({
+  //       index: 0,
+  //       routes: [{ name: "SensorDataScreen" }]
+  //     });
+  //   }
+  // }, [navigation, index]);
 
   return (
       <Stack.Navigator
+        initialRouteName="SensorDataScreen"
         screenOptions={{
           headerShown: false,
           tabBarShowLabel: false, 

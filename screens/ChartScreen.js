@@ -14,6 +14,12 @@ const mapDate = (date, index) => {
   const minutes = time.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
 }
+
+const areAllValuesSame = (readings) => {
+  const values = Object.values(readings[0]);
+  return values.every(value => value === values[0]);
+};
+
 function ChartScreen() {
   const route = useRoute();
   const dispatch = useDispatch();
@@ -24,6 +30,7 @@ function ChartScreen() {
   const channel = sensors[route.params.id].temperature.thingspeakReadings.channel;
   const temperatureField = sensors[route.params.id].temperature.thingspeakReadings.field;
   const hummidityField = sensors[route.params.id].hummidity.thingspeakReadings.field;
+  // console.log("readings", readings[channel])
   return (
     <View style={commonStyles.screenOuterContainer}>
       <View style={loading ? [commonStyles.screenContainer, commonStyles.loading] : [commonStyles.screenContainer]}>
@@ -39,46 +46,49 @@ function ChartScreen() {
           </Text>
         </View>
 
-        {loading ? <View style={styles.loadingContainer} /> : <LineChart
-          data={{
-            labels: Object.keys(readings[channel][temperatureField]).map(mapDate),
-            datasets: [
-              {
-                data: Object.values(readings[channel][temperatureField])
-              }
-            ]
-          }}
-          width={Dimensions.get("window").width-72} // from react-native
-          height={210}
-          yAxisLabel=""
-          xLabelsOffset={10}
-          verticalLabelRotation={290}
-          yAxisSuffix="°C"
-          yAxisInterval={1} // optional, defaults to 1
-          chartConfig={{
-            backgroundColor: COLORS.GREEN,
-            backgroundGradientFrom: COLORS.GREEN,
-            backgroundGradientTo: COLORS.GREEN,
-            decimalPlaces: 1, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            style: {
-              borderRadius: 16,
-              paddingVertical: 20
-            },
-            propsForDots: {
-              r: "2",
-              strokeWidth: "1",
-              stroke: COLORS.RED
-            }
-          }}
-          bezier
-          style={{
-            marginVertical: 8,
-            borderRadius: 16
-          }}
-        />}
-
+        {loading 
+          ? <View style={styles.loadingContainer} /> 
+          : areAllValuesSame([readings[channel][temperatureField]])
+            ? <Text style={commonStyles.text}>Wszystkie odczyty wynoszą: {readings[channel] ? Object.values(readings[channel][temperatureField])[0] : '-'}</Text>
+            : <LineChart
+                data={{
+                  labels: Object.keys(readings[channel][temperatureField]).map(mapDate),
+                  datasets: [
+                    {
+                      data: Object.values(readings[channel][temperatureField])
+                    }
+                  ]
+                }}
+                width={Dimensions.get("window").width-72} // from react-native
+                height={210}
+                yAxisLabel=""
+                xLabelsOffset={10}
+                verticalLabelRotation={290}
+                yAxisSuffix="°C"
+                yAxisInterval={1} // optional, defaults to 1
+                chartConfig={{
+                  backgroundColor: COLORS.GREEN,
+                  backgroundGradientFrom: COLORS.GREEN,
+                  backgroundGradientTo: COLORS.GREEN,
+                  decimalPlaces: 1, // optional, defaults to 2dp
+                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                    paddingVertical: 20
+                  },
+                  propsForDots: {
+                    r: "2",
+                    strokeWidth: "1",
+                    stroke: COLORS.RED
+                  }
+                }}
+                bezier
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 16
+                }}
+              />} 
 
       <View style={styles.headerContainer}>
           <Text style={commonStyles.text}>
@@ -86,44 +96,48 @@ function ChartScreen() {
           </Text>
       </View>
 
-      {loading ? <View style={styles.loadingContainer} /> : <LineChart
-          data={{
-            labels: Object.keys(readings[channel][hummidityField]).map(mapDate),
-            datasets: [
-              {
-                data: Object.values(readings[channel][hummidityField])
-              }
-            ]
-          }}
-          width={Dimensions.get("window").width-72} // from react-native
-          height={210}
-          yAxisLabel=""
-          yAxisSuffix="%"
-          yAxisInterval={1} // optional, defaults to 1
-          xLabelsOffset={10}
-          verticalLabelRotation={290}
-          chartConfig={{
-            backgroundColor: COLORS.GREEN,
-            backgroundGradientFrom: COLORS.GREEN,
-            backgroundGradientTo: COLORS.GREEN,
-            decimalPlaces: 0, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            style: {
-              borderRadius: 16
-            },
-            propsForDots: {
-              r: "2",
-              strokeWidth: "1",
-              stroke: COLORS.RED
-            }
-          }}
-          bezier
-          style={{
-            marginVertical: 8,
-            borderRadius: 16
-          }}
-        />}
+      {loading 
+        ? <View style={styles.loadingContainer} /> 
+        : areAllValuesSame([readings[channel][hummidityField]])
+          ? <Text style={commonStyles.text}>Wszystkie odczyty wynoszą: {readings[channel] ? Object.values(readings[channel][hummidityField])[0] : '-'}</Text>
+          : <LineChart
+              data={{
+                labels: Object.keys(readings[channel][hummidityField]).map(mapDate),
+                datasets: [
+                  {
+                    data: Object.values(readings[channel][hummidityField])
+                  }
+                ]
+              }}
+              width={Dimensions.get("window").width-72} // from react-native
+              height={210}
+              yAxisLabel=""
+              yAxisSuffix="%"
+              yAxisInterval={1} // optional, defaults to 1
+              xLabelsOffset={10}
+              verticalLabelRotation={290}
+              chartConfig={{
+                backgroundColor: COLORS.GREEN,
+                backgroundGradientFrom: COLORS.GREEN,
+                backgroundGradientTo: COLORS.GREEN,
+                decimalPlaces: 0, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16
+                },
+                propsForDots: {
+                  r: "2",
+                  strokeWidth: "1",
+                  stroke: COLORS.RED
+                }
+              }}
+              bezier
+              style={{
+                marginVertical: 8,
+                borderRadius: 16
+              }}
+            />}
       </View>    
     </View>
   )
