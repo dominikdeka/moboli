@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { COLORS, commonStyles } from '../../styles/common';
 import { useNavigation } from '@react-navigation/native';
 
-function SensorReadings({sensorReading, children, id}) {
+function SensorReadings({temperature, hummidity, children, id}) {
   const navigation = useNavigation();
 
   function pressHandler() {
@@ -15,11 +15,11 @@ function SensorReadings({sensorReading, children, id}) {
       <View style={styles.readingsContainer}>
         <View style={styles.singleReadingContainer}>
           <Ionicons name="thermometer-outline" size={30} color="white" />
-          <Text style={commonStyles.text}>{sensorReading?.temperature.value} °C</Text>          
+          <Text style={commonStyles.text}>{temperature} °C</Text>          
         </View>
         <View style={styles.singleReadingContainer}>
           <Ionicons name="water-outline" size={30} color="white" />
-          <Text style={commonStyles.text}>{sensorReading?.hummidity.value} %</Text>          
+          <Text style={commonStyles.text}>{hummidity} %</Text>          
         </View>
 
       </View>

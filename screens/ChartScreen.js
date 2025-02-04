@@ -30,7 +30,6 @@ function ChartScreen() {
   const channel = sensors[route.params.id].temperature.thingspeakReadings.channel;
   const temperatureField = sensors[route.params.id].temperature.thingspeakReadings.field;
   const hummidityField = sensors[route.params.id].hummidity.thingspeakReadings.field;
-  // console.log("readings", readings[channel])
   return (
     <View style={commonStyles.screenOuterContainer}>
       <View style={loading ? [commonStyles.screenContainer, commonStyles.loading] : [commonStyles.screenContainer]}>
